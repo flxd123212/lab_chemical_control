@@ -4,7 +4,9 @@
 
 基于 **GEC6818 开发板**（ARM Cortex-A53）的危化品库房环境智能管控系统，实现**门禁管理、环境监测、泄漏报警、联动控制**一体化，并提供 Qt 桌面模拟版本用于开发调试与界面演示。
 
-![UI 预览](模拟界面预览.html)
+![UI 预览](ui_preview.png)
+
+> 🖥️ **在线交互预览**（GitHub Pages）：<https://flxd123212.github.io/lab_chemical_control/preview.html>
 
 ---
 
@@ -113,7 +115,7 @@
 | 文件 | 说明 |
 |------|------|
 | `rfid_dump.c` | RFID 卡号读取调试工具，用于采集卡片 UID 并加入白名单 |
-| `模拟界面预览.html` | 网页版 UI 模拟预览（800×480，可交互按钮模拟报警/刷卡），浏览器直接打开即可 |
+| `preview.html` | 网页版 UI 模拟预览（800×480，可交互按钮模拟报警/刷卡），可部署 GitHub Pages 在线访问 |
 
 ## 目录结构
 
@@ -146,14 +148,16 @@ lab_chemical_control/
 │   ├── rfidcard.cpp / rfidcard.h
 │   └── alarm.cpp / alarm.h
 ├── rfid_dump.c                    # RFID 卡号调试工具
-└── 模拟界面预览.html               # 网页 UI 模拟预览
+├── ui_preview.png                  # UI 界面截图（README 展示用）
+└── preview.html                    # 网页 UI 模拟预览
 ```
 
 ## 快速开始
 
 ### 1. 界面预览（无需硬件）
 
-浏览器直接打开 [`模拟界面预览.html`](模拟界面预览.html)，可交互演示气体报警、积水报警、刷卡授权/拒绝等场景，界面尺寸与 GEC6818 LCD 完全一致。
+- **在线预览（推荐）**：仓库开启 GitHub Pages 后访问 <https://flxd123212.github.io/lab_chemical_control/preview.html>，无需下载即可交互演示（开启方法见 [GitHub Pages 部署](#github-pages-部署)）
+- **本地预览**：浏览器直接打开 [`preview.html`](preview.html)，可交互演示气体报警、积水报警、刷卡授权/拒绝等场景，界面尺寸与 GEC6818 LCD 完全一致
 
 ### 2. Qt 桌面模拟（PC 上演示完整流程）
 
@@ -190,6 +194,21 @@ arm-linux-gnueabihf-gcc rfid_dump.c -o rfid_dump
 | [docs/02-硬件接线说明.md](docs/02-硬件接线说明.md) | GEC6818 平台、各传感器/外设接线与设备节点 |
 | [docs/03-编译与部署.md](docs/03-编译与部署.md) | C 版交叉编译、Qt 版桌面/ARM 编译、部署运行 |
 | [docs/04-界面说明与模拟.md](docs/04-界面说明与模拟.md) | UI 布局说明、网页模拟预览、桌面调试功能 |
+
+## GitHub Pages 部署
+
+将 `preview.html` 以网页形式在线渲染（可交互），供评审/演示直接访问：
+
+1. 将本仓库推送到 GitHub（`git push origin main`）
+2. 打开仓库页面 **Settings → Pages**
+3. **Build and deployment** → Source 选择 **Deploy from a branch**
+4. Branch 选择 `main`，目录选 **/(root)**，点击 **Save**
+5. 等待 1~2 分钟，访问：
+
+   - 交互预览：<https://flxd123212.github.io/lab_chemical_control/preview.html>
+
+> 提示：若仓库名不是 `lab_chemical_control`，将链接中的仓库名替换即可。
+> README 顶部已内嵌 `ui_preview.png` 界面截图，未开启 Pages 时也能看到界面效果。
 
 ## Git 提交规范
 
