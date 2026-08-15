@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=800">
+<title>实验室危化品库房环境智能管控系统 - UI 模拟预览</title>
+<style>
+  /* GEC6818 LCD 模拟 (800x480) */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #2c2c2c;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Courier New', monospace;
+  }
+  .lcd-frame {
+    background: #333;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+  .lcd {
+    width: 800px;
+    height: 480px;
+    background: #000;
+    border: 2px solid #555;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ======== Title Bar (40px) ======== */
+  .title-bar {
+    height: 40px;
+    background: #000080; /* COLOR_NAVY */
+    border-bottom: 1px solid #0000ff;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+  .title-bar span {
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+
+  /* ======== Main Area (390px) ======== */
+  .main-area {
+    display: flex;
+    height: 390px;
+    flex-shrink: 0;
+  }
+
+  /* Left Panel - System Status (280px) */
+  .left-panel {
+    width: 280px;
+    border: 1px solid #555;
+    margin: 2px 0 2px 4px;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-header {
+    height: 22px;
+    background: #00008b;
+    display: flex;
+    align-items: center;
+    padding-left: 6px;
+    border-bottom: 1px solid #555;
+    flex-shrink: 0;
+  }
+  .panel-header span {
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+  }
+  .panel-body {
+    flex: 1;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .status-row {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+  }
+  .status-row .label { color: #999; margin-right: 6px; }
+  .status-row .ok    { color: #00ff00; }
+  .status-row .warn  { color: #ff0000; font-weight: bold; }
+  .status-row .info  { color: #00ffff; }
+
+  .alarm-row {
+    height: 24px;
+    background: #8b0000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 2px;
+  }
+  .alarm-row.ok-bg {
+    background: #000;
+    color: #00ff00;
+  }
+
+  /* Right Panel - Sensor Monitor (512px) */
+  .right-panel {
+    flex: 1;
+    border: 1px solid #555;
+    margin: 2px 4px 2px 2px;
+    display: flex;
+    flex-direction: column;
+  }
+  .sensor-row {
+    height: 26px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 13px;
+  }
+  .sensor-row .label { color: #aaa; margin-right: 6px; }
+  .sensor-row .value { color: #00ffff; }
+  .sensor-row .value.red { color: #ff0000; font-weight: bold; }
+  .sensor-row .value.green { color: #00ff00; }
+
+  .alarm-block {
+    height: 26px;
+    background: #8b0000;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+    border-radius: 2px;
+  }
+
+  /* ======== Card Info Bar (30px) ======== */
+  .card-bar {
+    height: 30px;
+    background: #555;
+    border-top: 1px solid #888;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 30px;
+    flex-shrink: 0;
+  }
+  .card-bar .time {
+    color: #fff;
+    font-size: 12px;
+  }
+  .card-bar .card-info {
+    font-size: 12px;
+  }
+  .card-bar .granted { color: #00ff00; }
+  .card-bar .denied  { color: #ff0000; }
+  .card-bar .nocard  { color: #888; }
+
+  /* ======== Footer (20px) ======== */
+  .footer {
+    height: 20px;
+    background: #000080;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+  .footer span {
+    color: #aaa;
+    font-size: 10px;
+  }
+
+  /* ======== Control Buttons ======== */
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .controls button {
+    padding: 8px 18px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #555;
+    color: #fff;
+    transition: 0.2s;
+  }
+  .controls button:hover { background: #777; }
+  .controls button.active { background: #c00; }
+  .controls button.active.gas { background: #c00; }
+  .controls button.active.water { background: #069; }
+
+  .legend {
+    margin-top: 10px;
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+  }
+  .legend em { color: #0a0; font-style: normal; }
+</style>
+</head>
+<body>
+
+<div class="lcd-frame">
+  <div class="lcd" id="lcd">
+
+    <!-- Title Bar -->
+    <div class="title-bar">
+      <span>Lab Chemical Warehouse Env Control System v1.0</span>
+    </div>
+
+    <!-- Main Area -->
+    <div class="main-area">
+      <!-- Left Panel -->
+      <div class="left-panel">
+        <div class="panel-header"><span>System Status</span></div>
+        <div class="panel-body">
+          <div class="status-row"><span class="label">Gas:</span><span class="ok" id="gas-status">✔ Normal</span></div>
+          <div class="status-row"><span class="label">Water:</span><span class="ok" id="water-status">✔ Normal (320)</span></div>
+          <div class="status-row"><span class="label">Gate:</span><span class="ok" id="gate-status">✔ Locked</span></div>
+          <div class="alarm-row ok-bg" id="alarm-row">
+            <span id="alarm-text">Status: ✔ All Normal</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div class="right-panel">
+        <div class="panel-header"><span>Sensor Monitor</span></div>
+        <div class="panel-body">
+          <div class="sensor-row"><span class="label">Temperature:</span><span class="value" id="temp-value">25.3 ℃</span></div>
+          <div class="sensor-row"><span class="label">Humidity:</span><span class="value" id="humi-value">60.5 %</span></div>
+          <div class="sensor-row" id="gas-sensor-row"><span class="label">Gas/Smoke:</span><span class="value green" id="gas-sensor-value">Clear (Normal)</span></div>
+          <div class="sensor-row" id="water-sensor-row"><span class="label">Water Level:</span><span class="value green" id="water-sensor-value">Normal (ADC: 320)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Info Bar -->
+    <div class="card-bar">
+      <span class="time" id="clock">2025-01-15 14:30:22</span>
+      <span class="card-info nocard" id="card-display">Card: -- No card read --</span>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <span id="uptime">Uptime: 00:12:34</span>
+      <span>GEC6818 - Hazard Chemical Control</span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button onclick="toggleGas()" id="btn-gas">触发气体报警</button>
+    <button onclick="toggleWater()" id="btn-water">触发积水报警</button>
+    <button onclick="simCardGranted()">刷卡授权</button>
+    <button onclick="simCardDenied()">刷卡拒绝</button>
+    <button onclick="resetAll()">重置</button>
+  </div>
+  <div class="legend">
+    点击按钮模拟传感器状态变化，观察 LCD 界面实时更新。
+    <em>* 界面尺寸 800×480，与 GEC6818 LCD 一致</em>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 模拟系统状态
+// ============================================================
+let state = {
+  gasAlarm: false,
+  waterAlarm: false,
+  waterRaw: 320,
+  temp: 25.3,
+  humi: 60.5,
+  gateOpen: false,
+  cardId: '',
+  cardGranted: false,
+  startTime: Date.now(),
+};
+
+function fmtTime(ts) {
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function fmtUptime(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = String(Math.floor(s / 3600)).padStart(2, '0');
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+  const sec = String(s % 60).padStart(2, '0');
+  return `Uptime: ${h}:${m}:${sec}`;
+}
+
+function updateUI() {
+  const now = Date.now();
+
+  // Clock
+  document.getElementById('clock').textContent = fmtTime(now);
+
+  // Uptime
+  document.getElementById('uptime').textContent = fmtUptime(now - state.startTime);
+
+  // === Left Panel ===
+  // Gas
+  const gasEl = document.getElementById('gas-status');
+  gasEl.className = state.gasAlarm ? 'warn' : 'ok';
+  gasEl.textContent = state.gasAlarm ? 'ALARM! (leak detected)' : '✔ Normal';
+
+  // Water
+  const watEl = document.getElementById('water-status');
+  watEl.className = state.waterAlarm ? 'warn' : 'ok';
+  watEl.textContent = state.waterAlarm ? `ALARM! (leak detected)` : `✔ Normal (${state.waterRaw})`;
+
+  // Gate
+  const gateEl = document.getElementById('gate-status');
+  gateEl.className = state.gateOpen ? 'info' : 'ok';
+  gateEl.textContent = state.gateOpen ? 'OPEN (access granted)' : '✔ Locked';
+
+  // Alarm row
+  const alarmRow = document.getElementById('alarm-row');
+  const alarmText = document.getElementById('alarm-text');
+  const shouldAlarm = state.gasAlarm || state.waterAlarm;
+  alarmRow.className = shouldAlarm ? 'alarm-row' : 'alarm-row ok-bg';
+  alarmText.textContent = shouldAlarm ? '!!! ALARM ACTIVE !!!' : 'Status: ✔ All Normal';
+
+  // === Right Panel ===
+  // Temperature
+  // 模拟温度随机微变
+  state.temp += (Math.random() - 0.5) * 0.4;
+  state.temp = Math.round(state.temp * 10) / 10;
+  document.getElementById('temp-value').textContent = `${state.temp.toFixed(1)} ℃`;
+
+  // 模拟湿度随机微变
+  state.humi += (Math.random() - 0.5) * 0.6;
+  state.humi = Math.min(99, Math.max(20, Math.round(state.humi * 10) / 10));
+  document.getElementById('humi-value').textContent = `${state.humi.toFixed(1)} %`;
+
+  // Gas sensor
+  document.getElementById('gas-sensor-row').className = 'sensor-row' + (state.gasAlarm ? ' alarm-block' : '');
+  const gsv = document.getElementById('gas-sensor-value');
+  gsv.className = state.gasAlarm ? 'value red' : 'value green';
+  gsv.textContent = state.gasAlarm ? '*** DETECTED ***' : 'Clear (Normal)';
+
+  // Water sensor
+  state.waterRaw += Math.floor((Math.random() - 0.5) * 20);
+  state.waterRaw = Math.max(0, Math.min(4095, state.waterRaw));
+  document.getElementById('water-sensor-row').className = 'sensor-row' + (state.waterAlarm ? ' alarm-block' : '');
+  const wsv = document.getElementById('water-sensor-value');
+  wsv.className = state.waterAlarm ? 'value red' : 'value green';
+  wsv.textContent = state.waterAlarm ? '*** LEAK DETECTED ***' : `Normal (ADC: ${state.waterRaw})`;
+
+  // Card
+  const cardEl = document.getElementById('card-display');
+  if (state.cardId) {
+    cardEl.className = `card-info ${state.cardGranted ? 'granted' : 'denied'}`;
+    cardEl.textContent = `Card: ${state.cardId} [${state.cardGranted ? 'GRANTED' : 'REJECTED'}]`;
+  } else {
+    cardEl.className = 'card-info nocard';
+    cardEl.textContent = 'Card: -- No card read --';
+  }
+}
+
+// ============================================================
+// 交互控制
+// ============================================================
+function toggleGas() {
+  state.gasAlarm = !state.gasAlarm;
+  document.getElementById('btn-gas').textContent = state.gasAlarm ? '解除气体报警' : '触发气体报警';
+  document.getElementById('btn-gas').className = state.gasAlarm ? 'active gas' : '';
+  if (state.gasAlarm) {
+    state.waterAlarm = false;
+    document.getElementById('btn-water').textContent = '触发积水报警';
+    document.getElementById('btn-water').className = '';
+  }
+}
+
+function toggleWater() {
+  state.waterAlarm = !state.waterAlarm;
+  document.getElementById('btn-water').textContent = state.waterAlarm ? '解除积水报警' : '触发积水报警';
+  document.getElementById('btn-water').className = state.waterAlarm ? 'active water' : '';
+  if (state.waterAlarm) {
+    state.gasAlarm = false;
+    document.getElementById('btn-gas').textContent = '触发气体报警';
+    document.getElementById('btn-gas').className = '';
+  }
+}
+
+function simCardGranted() {
+  state.cardId = 'A1B2C3D4';
+  state.cardGranted = true;
+  state.gateOpen = true;
+  document.getElementById('card-display').className = 'card-info granted';
+  document.getElementById('card-display').textContent = `Card: ${state.cardId} [GRANTED]`;
+  updateUI();
+  // 5秒后自动关门
+  setTimeout(() => { state.gateOpen = false; updateUI(); }, 5000);
+}
+
+function simCardDenied() {
+  state.cardId = 'FFFF0000';
+  state.cardGranted = false;
+  state.gateOpen = false;
+  updateUI();
+}
+
+function resetAll() {
+  state.gasAlarm = false;
+  state.waterAlarm = false;
+  state.waterRaw = 320;
+  state.temp = 25.3;
+  state.humi = 60.5;
+  state.gateOpen = false;
+  state.cardId = '';
+  state.cardGranted = false;
+  document.getElementById('btn-gas').textContent = '触发气体报警';
+  document.getElementById('btn-gas').className = '';
+  document.getElementById('btn-water').textContent = '触发积水报警';
+  document.getElementById('btn-water').className = '';
+}
+
+// ============================================================
+// 定时更新 (模拟系统10Hz刷新)
+// ============================================================
+setInterval(updateUI, 500);
+updateUI();
+</script>
+</body>
+</html>
